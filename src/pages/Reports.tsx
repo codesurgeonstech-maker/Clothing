@@ -155,7 +155,7 @@ export default function Reports() {
                       </Pie>
                       <RechartsTooltip 
                         contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                        formatter={(value: number) => `₹${value.toFixed(2)}`}
+                        formatter={(value: any) => `₹${Number(value).toFixed(2)}`}
                       />
                     </PieChart>
                   </ResponsiveContainer>
@@ -218,7 +218,7 @@ export default function Reports() {
                       <Pie data={salesByMode} innerRadius={60} outerRadius={90} paddingAngle={5} dataKey="value">
                         {salesByMode.map((_, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
                       </Pie>
-                      <RechartsTooltip formatter={(value: number) => `₹${value.toFixed(2)}`} />
+                      <RechartsTooltip formatter={(value: any) => `₹${Number(value).toFixed(2)}`} />
                     </PieChart>
                   </ResponsiveContainer>
                 </div>

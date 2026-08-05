@@ -18,7 +18,7 @@ interface AppState {
   
   // Product Actions
   addProduct: (product: Omit<Product, 'id'>) => void
-  updateProduct: (id: string, product: Omit<Product, 'id'>) => void
+  updateProduct: (id: string, product: Partial<Product>) => void
   deleteProduct: (id: string) => void
   
   // Customer Actions
