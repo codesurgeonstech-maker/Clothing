@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom"
-import { LayoutDashboard, Receipt, Package, Users, BarChart3, PieChart, Settings, Megaphone } from "lucide-react"
+import { LayoutDashboard, Receipt, Package, Users, BarChart3, Settings } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const navItems = [

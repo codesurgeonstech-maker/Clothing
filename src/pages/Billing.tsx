@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
-import { Search, Plus, Minus, Trash2, CreditCard, Banknote, Smartphone, Printer, Download, Share2, ShoppingBag } from "lucide-react"
+import { Search, Plus, Minus, Trash2, Banknote, Printer, Download, Share2, ShoppingBag } from "lucide-react"
 import type { Product, Bill } from "@/data/mockData"
 import toast from "react-hot-toast"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
@@ -14,7 +14,7 @@ import html2canvas from "html2canvas"
 import { format } from "date-fns"
 
 export default function Billing() {
-  const { products, cart, addToCart, removeFromCart, updateCartQuantity, clearCart, checkout, customers } = useStore()
+  const { products, cart, addToCart, updateCartQuantity, clearCart, checkout, customers } = useStore()
   const [searchTerm, setSearchTerm] = useState("")
   const [discountValue, setDiscountValue] = useState(0)
   const [paymentMode, setPaymentMode] = useState("Cash")
@@ -77,7 +77,7 @@ export default function Billing() {
       pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight)
       pdf.save(`receipt-${lastBill.id}.pdf`)
       toast.success("PDF Downloaded successfully")
-    } catch (err) {
+    } catch {
       toast.error("Failed to generate PDF")
     }
   }
