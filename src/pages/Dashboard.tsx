@@ -44,7 +44,7 @@ export default function Dashboard() {
     { title: "Today's Sales", value: `₹${todayRevenue.toLocaleString(undefined, { maximumFractionDigits: 0 })}`, icon: IndianRupee, trend: "Live", positive: true },
     { title: "Total Revenue", value: `₹${totalRevenue.toLocaleString(undefined, { maximumFractionDigits: 0 })}`, icon: IndianRupee, trend: "Overall", positive: true },
     { title: "Total Customers", value: customers.length, icon: Users, trend: "Database", positive: true },
-    { title: "Total Products", value: products.length, icon: ShoppingBag, trend: "Inventory", positive: true },
+    { title: "Total Products", value: products.length, icon: ShoppingBag, trend: "Catalog", positive: true },
   ]
 
   return (
@@ -108,29 +108,41 @@ export default function Dashboard() {
         </Card>
 
         <Card className="border-none shadow-sm glass">
-          <CardHeader>
+          <CardHeader className="border-b border-slate-100 pb-4">
             <CardTitle>Recent Transactions</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-5">
+          <CardContent className="p-0">
+            <div className="divide-y divide-slate-100">
               {recentBills.map((bill) => (
-                <div key={bill.id} className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-light flex items-center justify-center text-primary font-medium text-xs">
+                <div key={bill.id} className="flex items-center justify-between p-4 hover:bg-slate-50/50 transition-colors group cursor-pointer">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center text-primary font-bold text-sm shadow-sm group-hover:scale-105 transition-transform">
                       {bill.customerName.charAt(0)}
                     </div>
                     <div>
-                      <p className="text-sm font-medium">{bill.customerName}</p>
-                      <p className="text-xs text-muted-foreground">{bill.id} • {format(new Date(bill.date), 'MMM d, h:mm a')}</p>
+                      <p className="text-sm font-bold text-slate-800">{bill.customerName === "Walk-in Customer" ? "Walk-in" : bill.customerName}</p>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <p className="text-[11px] font-mono text-slate-400">{bill.id}</p>
+                        <span className="w-1 h-1 rounded-full bg-slate-300"></span>
+                        <p className="text-[11px] text-slate-500">{format(new Date(bill.date), 'MMM d, h:mm a')}</p>
+                      </div>
                     </div>
                   </div>
-                  <div className="font-semibold text-sm">
-                    +₹{bill.total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  <div className="flex flex-col items-end">
+                    <div className="font-bold text-sm text-emerald-600">
+                      +₹{bill.total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </div>
+                    <div className="text-[10px] uppercase font-bold tracking-wider mt-1 px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
+                      {bill.paymentMode}
+                    </div>
                   </div>
                 </div>
               ))}
               {recentBills.length === 0 && (
-                <p className="text-sm text-muted-foreground text-center py-4">No recent transactions</p>
+                <div className="p-8 text-center text-sm text-muted-foreground">
+                  <ShoppingBag className="w-8 h-8 mx-auto mb-2 opacity-20" />
+                  No recent transactions
+                </div>
               )}
             </div>
           </CardContent>

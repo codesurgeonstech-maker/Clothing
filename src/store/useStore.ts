@@ -7,14 +7,34 @@ export interface CartItem extends Product {
   discount: number
 }
 
+export interface DropdownItem {
+  id: string;
+  name: string;
+}
+
+export interface StoreSettings {
+  storeName: string;
+  phone: string;
+  address: string;
+  taxEnabled: boolean;
+  cgstPercentage: number;
+  sgstPercentage: number;
+}
+
 interface AppState {
   products: Product[]
   customers: Customer[]
   bills: Bill[]
+  categories: DropdownItem[]
+  fabrics: DropdownItem[]
   
   // POS State
   cart: CartItem[]
   selectedCustomer: Customer | null
+  
+  // Settings State
+  storeSettings: StoreSettings
+  updateStoreSettings: (settings: Partial<StoreSettings>) => void
   
   // Product Actions
   addProduct: (product: Omit<Product, 'id'>) => void
@@ -25,6 +45,16 @@ interface AppState {
   addCustomer: (customer: Omit<Customer, 'id' | 'loyaltyPoints' | 'totalSpent' | 'repeatCustomer'>) => void
   updateCustomer: (id: string, customer: Partial<Customer>) => void
   deleteCustomer: (id: string) => void
+
+  // Category Actions
+  addCategory: (name: string) => void
+  updateCategory: (id: string, name: string) => void
+  deleteCategory: (id: string) => void
+
+  // Fabric Actions
+  addFabric: (name: string) => void
+  updateFabric: (id: string, name: string) => void
+  deleteFabric: (id: string) => void
 
   // POS Actions
   addToCart: (product: Product, quantity?: number) => void
@@ -44,9 +74,24 @@ export const useStore = create<AppState>()(
       products: [],
       customers: [],
       bills: [],
+      categories: ["Shirts", "T-Shirts", "Sarees", "Jeans", "Kids Wear", "Women's Wear", "Accessories", "Footwear"].map(name => ({ id: generateId('CAT'), name })),
+      fabrics: ["Cotton", "Polyester", "Silk", "Denim", "Linen", "Wool"].map(name => ({ id: generateId('FAB'), name })),
       
       cart: [],
       selectedCustomer: null,
+      
+      storeSettings: {
+        storeName: "CodeSurgeons POS",
+        phone: "+91 9876543210",
+        address: "123 Fashion Street, Tech Park, Bangalore",
+        taxEnabled: true,
+        cgstPercentage: 9,
+        sgstPercentage: 9
+      },
+      
+      updateStoreSettings: (settings) => set((state) => ({
+        storeSettings: { ...state.storeSettings, ...settings }
+      })),
 
       // --- Product Actions ---
       addProduct: (productData) => set((state) => ({
@@ -78,6 +123,32 @@ export const useStore = create<AppState>()(
 
       deleteCustomer: (id) => set((state) => ({
         customers: state.customers.filter(c => c.id !== id)
+      })),
+
+      // --- Category Actions ---
+      addCategory: (name) => set((state) => ({
+        categories: [...state.categories, { id: generateId('CAT'), name }]
+      })),
+      
+      updateCategory: (id, name) => set((state) => ({
+        categories: state.categories.map(c => c.id === id ? { ...c, name } : c)
+      })),
+
+      deleteCategory: (id) => set((state) => ({
+        categories: state.categories.filter(c => c.id !== id)
+      })),
+
+      // --- Fabric Actions ---
+      addFabric: (name) => set((state) => ({
+        fabrics: [...state.fabrics, { id: generateId('FAB'), name }]
+      })),
+      
+      updateFabric: (id, name) => set((state) => ({
+        fabrics: state.fabrics.map(f => f.id === id ? { ...f, name } : f)
+      })),
+
+      deleteFabric: (id) => set((state) => ({
+        fabrics: state.fabrics.filter(f => f.id !== id)
       })),
 
       // --- POS Actions ---
@@ -139,10 +210,16 @@ export const useStore = create<AppState>()(
           };
         });
 
-        // Add 18% GST on the discounted subtotal
+        // Tax calculation based on settings
         const subtotalAfterDiscount = subtotal - totalDiscount;
-        const gst = subtotalAfterDiscount * 0.18;
-        const finalTotal = subtotalAfterDiscount + gst;
+        let gst = 0;
+        let finalTotal = subtotalAfterDiscount;
+        
+        if (state.storeSettings.taxEnabled) {
+          const totalTaxPercent = state.storeSettings.cgstPercentage + state.storeSettings.sgstPercentage;
+          gst = (subtotalAfterDiscount * totalTaxPercent) / 100;
+          finalTotal = subtotalAfterDiscount + gst;
+        }
 
         const newBill: Bill = {
           id: generateId('INV'),
@@ -158,17 +235,24 @@ export const useStore = create<AppState>()(
           status: 'Completed'
         };
 
-        // Update product stock and customer loyalty/spending
-        const updatedProducts = state.products.map(p => {
-          const cartItem = state.cart.find(c => c.id === p.id);
-          if (cartItem) {
-            return { ...p, stock: Math.max(0, p.stock - cartItem.cartQuantity) };
-          }
-          return p;
-        });
-
+        // Update customer loyalty/spending
         let updatedCustomers = state.customers;
         if (state.selectedCustomer) {
+          // Determine the most bought color in this sale
+          const colorCounts: Record<string, number> = {};
+          let maxCount = 0;
+          let mostFrequentColor = state.selectedCustomer.favoriteColor;
+
+          state.cart.forEach(item => {
+            if (item.color) {
+              colorCounts[item.color] = (colorCounts[item.color] || 0) + item.cartQuantity;
+              if (colorCounts[item.color] > maxCount) {
+                maxCount = colorCounts[item.color];
+                mostFrequentColor = item.color;
+              }
+            }
+          });
+
           updatedCustomers = state.customers.map(c => {
             if (c.id === state.selectedCustomer!.id) {
               const newTotal = c.totalSpent + finalTotal;
@@ -176,7 +260,8 @@ export const useStore = create<AppState>()(
                 ...c,
                 totalSpent: newTotal,
                 loyaltyPoints: c.loyaltyPoints + Math.floor(finalTotal / 100),
-                repeatCustomer: true // They have transacted at least twice now or we just mark as true on any checkout for simplicity
+                repeatCustomer: true, // They have transacted at least twice now or we just mark as true on any checkout for simplicity
+                favoriteColor: maxCount > 0 ? mostFrequentColor : c.favoriteColor // Update color preference
               };
             }
             return c;
@@ -187,7 +272,6 @@ export const useStore = create<AppState>()(
           cart: [], 
           selectedCustomer: null, 
           bills: [...state.bills, newBill],
-          products: updatedProducts,
           customers: updatedCustomers
         };
       })

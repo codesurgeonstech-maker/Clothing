@@ -20,6 +20,10 @@ export default function Customers() {
   const [isEditOpen, setIsEditOpen] = useState(false)
   const [isDeleteOpen, setIsDeleteOpen] = useState(false)
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null)
+  
+  const [createSameWhatsapp, setCreateSameWhatsapp] = useState(true)
+  const [editSameWhatsapp, setEditSameWhatsapp] = useState(true)
+  
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 10
 
@@ -42,12 +46,16 @@ export default function Customers() {
   const handleCreateCustomer = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
+    const phone = formData.get("phone") as string
+    const whatsapp = createSameWhatsapp ? phone : formData.get("whatsapp") as string
+    const birthday = formData.get("birthday") as string || new Date().toISOString()
+    
     addCustomer({
       name: formData.get("name") as string,
-      phone: formData.get("phone") as string,
-      whatsapp: formData.get("whatsapp") as string,
-      email: formData.get("email") as string,
-      birthday: new Date().toISOString(),
+      phone,
+      whatsapp,
+      email: "", // Removed from form
+      birthday,
       favoriteCategory: "Shirts",
       favoriteColor: "Blue",
     })
@@ -59,11 +67,15 @@ export default function Customers() {
     e.preventDefault()
     if (!selectedCustomer) return
     const formData = new FormData(e.currentTarget)
+    const phone = formData.get("phone") as string
+    const whatsapp = editSameWhatsapp ? phone : formData.get("whatsapp") as string
+    const birthday = formData.get("birthday") as string
+    
     updateCustomer(selectedCustomer.id, {
       name: formData.get("name") as string,
-      phone: formData.get("phone") as string,
-      whatsapp: formData.get("whatsapp") as string,
-      email: formData.get("email") as string,
+      phone,
+      whatsapp,
+      ...(birthday ? { birthday } : {}), // Update birthday if provided
     })
     toast.success("Customer updated successfully")
     setIsEditOpen(false)
@@ -78,6 +90,7 @@ export default function Customers() {
 
   const openEdit = (customer: Customer) => {
     setSelectedCustomer(customer)
+    setEditSameWhatsapp(customer.phone === customer.whatsapp)
     setIsEditOpen(true)
   }
 
@@ -93,7 +106,7 @@ export default function Customers() {
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">Customers</h1>
           <p className="text-muted-foreground mt-1">Manage your customer relationships and loyalty.</p>
         </div>
-        <Button onClick={() => setIsCreateOpen(true)}>
+        <Button onClick={() => { setCreateSameWhatsapp(true); setIsCreateOpen(true); }}>
           <Plus className="w-4 h-4 mr-2" /> Add Customer
         </Button>
       </div>
@@ -175,7 +188,6 @@ export default function Customers() {
                     </TableCell>
                     <TableCell>
                       <div className="text-sm">{customer.phone}</div>
-                      <div className="text-xs text-muted-foreground">{customer.email}</div>
                     </TableCell>
                     <TableCell>
                       <div className="font-medium text-amber-600">{customer.loyaltyPoints} pts</div>
@@ -268,15 +280,29 @@ export default function Customers() {
               <div className="space-y-2">
                 <Label>Phone</Label>
                 <Input name="phone" placeholder="Phone number" required />
+                <div className="flex items-center space-x-2 pt-2">
+                  <input 
+                    type="checkbox" 
+                    id="sameWhatsappCreate" 
+                    checked={createSameWhatsapp} 
+                    onChange={(e) => setCreateSameWhatsapp(e.target.checked)} 
+                    className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary" 
+                  />
+                  <label htmlFor="sameWhatsappCreate" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    Same WhatsApp number
+                  </label>
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label>WhatsApp</Label>
-                <Input name="whatsapp" placeholder="WhatsApp number" />
-              </div>
+              {!createSameWhatsapp && (
+                <div className="space-y-2">
+                  <Label>WhatsApp</Label>
+                  <Input name="whatsapp" placeholder="WhatsApp number" />
+                </div>
+              )}
             </div>
             <div className="space-y-2">
-              <Label>Email</Label>
-              <Input name="email" type="email" placeholder="Email address" />
+              <Label>Date of Birth</Label>
+              <Input name="birthday" type="date" />
             </div>
             <DialogFooter className="pt-4">
               <Button type="button" variant="outline" onClick={() => setIsCreateOpen(false)}>Cancel</Button>
@@ -301,15 +327,29 @@ export default function Customers() {
               <div className="space-y-2">
                 <Label>Phone</Label>
                 <Input name="phone" defaultValue={selectedCustomer?.phone} required />
+                <div className="flex items-center space-x-2 pt-2">
+                  <input 
+                    type="checkbox" 
+                    id="sameWhatsappEdit" 
+                    checked={editSameWhatsapp} 
+                    onChange={(e) => setEditSameWhatsapp(e.target.checked)} 
+                    className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary" 
+                  />
+                  <label htmlFor="sameWhatsappEdit" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    Same WhatsApp number
+                  </label>
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label>WhatsApp</Label>
-                <Input name="whatsapp" defaultValue={selectedCustomer?.whatsapp} />
-              </div>
+              {!editSameWhatsapp && (
+                <div className="space-y-2">
+                  <Label>WhatsApp</Label>
+                  <Input name="whatsapp" defaultValue={selectedCustomer?.whatsapp} />
+                </div>
+              )}
             </div>
             <div className="space-y-2">
-              <Label>Email</Label>
-              <Input name="email" type="email" defaultValue={selectedCustomer?.email} />
+              <Label>Date of Birth</Label>
+              <Input name="birthday" type="date" defaultValue={selectedCustomer?.birthday ? new Date(selectedCustomer.birthday).toISOString().split('T')[0] : ''} />
             </div>
             <DialogFooter className="pt-4">
               <Button type="button" variant="outline" onClick={() => setIsEditOpen(false)}>Cancel</Button>

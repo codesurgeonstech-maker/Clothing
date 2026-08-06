@@ -1,6 +1,6 @@
 import { addDays, subDays } from "date-fns"
 
-export type Category = "Shirts" | "T-Shirts" | "Sarees" | "Jeans" | "Kids Wear" | "Women's Wear" | "Accessories" | "Footwear"
+export type Category = string
 export type PaymentMode = "Cash" | "Card" | "UPI" | "Split"
 
 export interface Product {
@@ -14,7 +14,6 @@ export interface Product {
   color: string
   price: number
   costPrice: number
-  stock: number
   imageUrl?: string
 }
 
@@ -76,7 +75,6 @@ export const mockProducts: Product[] = Array.from({ length: 100 }).map((_, i) =>
     color: colors[Math.floor(Math.random() * colors.length)],
     price,
     costPrice: price * 0.6,
-    stock: Math.floor(Math.random() * 100) + 10,
     imageUrl: `https://ui-avatars.com/api/?name=${category.charAt(0)}&background=random`,
   }
 })

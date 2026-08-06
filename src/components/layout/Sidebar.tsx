@@ -1,6 +1,7 @@
 import { NavLink } from "react-router-dom"
 import { LayoutDashboard, Receipt, Package, Users, BarChart3, Settings } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useStore } from "@/store/useStore"
 
 const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/" },
@@ -14,14 +15,16 @@ const navItems = [
 ]
 
 export function Sidebar() {
+  const { storeSettings } = useStore()
+
   return (
     <aside className="w-64 border-r bg-white h-screen flex flex-col hidden md:flex sticky top-0 left-0 shadow-sm z-10">
       <div className="h-16 flex items-center px-6 border-b border-border/40">
         <div className="flex items-center gap-2 text-primary font-bold text-xl tracking-tight">
           <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white">
-            C
+            {storeSettings.storeName.charAt(0)}
           </div>
-          CodeSurgeons POS
+          <span className="truncate max-w-[150px]" title={storeSettings.storeName}>{storeSettings.storeName}</span>
         </div>
       </div>
       <div className="flex-1 py-6 px-3 flex flex-col gap-1 overflow-y-auto">
