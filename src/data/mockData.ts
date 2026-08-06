@@ -61,7 +61,7 @@ const sizes = ["XS", "S", "M", "L", "XL", "XXL", "Free Size"]
 const colors = ["Red", "Blue", "Black", "White", "Green", "Yellow", "Pink", "Navy"]
 const materials = ["Cotton", "Polyester", "Silk", "Denim", "Linen", "Wool"]
 
-export const mockProducts: Product[] = Array.from({ length: 100 }).map((_, i) => {
+export const mockProducts: Product[] = Array.from({ length: 20 }).map((_, i) => {
   const category = categories[i % categories.length]
   const price = Math.floor(Math.random() * 3000) + 500
   return {

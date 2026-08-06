@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { Product, Customer, Bill, BillItem } from '../data/mockData'
+import { mockProducts, mockCustomers, mockBills } from '../data/mockData'
 
 export interface CartItem extends Product {
   cartQuantity: number
@@ -64,6 +65,9 @@ interface AppState {
   clearCart: () => void
   setSelectedCustomer: (customer: Customer | null) => void
   checkout: (paymentMode: string) => void
+  
+  // Developer Actions
+  loadMockData: () => void
 }
 
 const generateId = (prefix: string) => `${prefix}-${Math.random().toString(36).substring(2, 9).toUpperCase()}`
@@ -93,9 +97,16 @@ export const useStore = create<AppState>()(
         storeSettings: { ...state.storeSettings, ...settings }
       })),
 
+      // --- Developer Actions ---
+      loadMockData: () => set((state) => ({
+        products: [...state.products, ...mockProducts],
+        customers: [...state.customers, ...mockCustomers],
+        bills: [...state.bills, ...mockBills]
+      })),
+
       // --- Product Actions ---
       addProduct: (productData) => set((state) => ({
-        products: [...state.products, { ...productData, id: generateId('PROD') }]
+        products: [{ ...productData, id: generateId('PROD') }, ...state.products]
       })),
       
       updateProduct: (id, productData) => set((state) => ({

@@ -171,7 +171,7 @@ export default function Billing() {
   }
 
   return (
-    <div className="min-h-[calc(100vh-8rem)] flex flex-col lg:h-[calc(100vh-8rem)] lg:flex-row gap-6">
+    <div className="min-h-[calc(100vh-8rem)] flex flex-col lg:h-[calc(100vh-8rem)] lg:min-h-[650px] lg:flex-row gap-6">
       
       {/* Left Panel: Customer Search OR Products Selection */}
       <div className="flex-1 flex flex-col gap-4 min-h-0 bg-white/40 rounded-2xl p-4 md:p-6 border shadow-sm">
@@ -342,7 +342,7 @@ export default function Billing() {
       </div>
 
       {/* Cart & Checkout */}
-      <Card className="w-full lg:w-[400px] flex flex-col min-h-0 border-none shadow-xl bg-white/80 backdrop-blur-xl">
+      <Card className="w-full lg:w-[400px] flex flex-col min-h-0 border-none shadow-xl bg-white/80 backdrop-blur-xl overflow-hidden">
         <CardHeader className="pb-4 border-b border-border/40">
           <div className="flex justify-between items-center">
             <CardTitle className="text-lg">Current Order</CardTitle>
@@ -352,7 +352,7 @@ export default function Billing() {
           </div>
         </CardHeader>
         
-        <div className="flex-1 w-full overflow-y-auto min-h-[250px]">
+        <div className="flex-1 w-full overflow-y-auto min-h-[150px]">
           <CardContent className="p-0 h-full">
             {cart.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full text-muted-foreground p-6 text-center">
@@ -401,8 +401,8 @@ export default function Billing() {
           </CardContent>
         </div>
 
-        <CardFooter className="flex-col pt-4 pb-6 px-4 bg-slate-50/50 border-t border-border/40 flex-shrink-0">
-          <div className="w-full space-y-4 mb-6">
+        <CardFooter className="flex-col pt-4 pb-4 px-4 bg-slate-50/50 border-t border-border/40 flex-shrink-0">
+          <div className="w-full space-y-4 mb-4">
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Subtotal</span>
               <span className="font-medium">₹{subtotal.toFixed(2)}</span>

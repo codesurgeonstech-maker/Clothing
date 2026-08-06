@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import toast from "react-hot-toast"
 
 export default function Settings() {
-  const { storeSettings, updateStoreSettings } = useStore()
+  const { storeSettings, updateStoreSettings, loadMockData } = useStore()
   
   // General Tab State
   const [storeName, setStoreName] = useState(storeSettings.storeName)
@@ -79,6 +79,25 @@ export default function Settings() {
                 <Input id="address" value={address} onChange={(e) => setAddress(e.target.value)} />
               </div>
               <Button className="mt-4" onClick={handleSaveGeneral}>Save Changes</Button>
+            </CardContent>
+          </Card>
+          
+          <Card className="border-none shadow-sm glass mt-6 border-red-100">
+            <CardHeader>
+              <CardTitle className="text-red-600">Developer Options</CardTitle>
+              <CardDescription>Actions for testing and development purposes.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button 
+                variant="outline" 
+                className="border-red-200 text-red-600 hover:bg-red-50"
+                onClick={() => {
+                  loadMockData()
+                  toast.success("Mock data loaded successfully")
+                }}
+              >
+                Load Mock Data
+              </Button>
             </CardContent>
           </Card>
         </TabsContent>

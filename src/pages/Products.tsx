@@ -19,7 +19,7 @@ export default function Products() {
     products, addProduct, updateProduct, deleteProduct,
     categories, addCategory, updateCategory, deleteCategory,
     fabrics, addFabric, updateFabric, deleteFabric,
-    bills
+    bills, loadMockData
   } = useStore()
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCategory, setSelectedCategory] = useState<string>("All")
@@ -178,6 +178,12 @@ export default function Products() {
           <p className="text-muted-foreground mt-1">Manage your products and pricing.</p>
         </div>
         <div className="flex gap-2 w-full sm:w-auto">
+          <Button variant="outline" onClick={() => {
+            loadMockData()
+            toast.success("Mock data loaded successfully")
+          }}>
+            Load Mock Data
+          </Button>
           <Button variant="outline"><Download className="w-4 h-4 mr-2"/> Export</Button>
           <Button onClick={() => { setNewProductForm(initialFormState); setIsCreateOpen(true); }}><Plus className="w-4 h-4 mr-2" /> Add Product</Button>
         </div>

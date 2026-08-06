@@ -181,7 +181,7 @@ export default function Reports() {
             <TabsContent value="general" className="space-y-6">
               <Card className="border-none shadow-sm glass">
                 <CardHeader>
-                  <CardTitle>Revenue vs Profit (Trend)</CardTitle>
+                  <CardTitle>Sales Trend</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="h-[350px] w-full">
@@ -191,8 +191,7 @@ export default function Reports() {
                         <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#6B7280'}} />
                         <YAxis axisLine={false} tickLine={false} tick={{fill: '#6B7280'}} tickFormatter={(value) => `₹${(value/1000).toFixed(1)}k`} />
                         <RechartsTooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} cursor={{fill: '#EEF2FF'}} />
-                        <Bar dataKey="revenue" fill="#4F46E5" radius={[4, 4, 0, 0]} barSize={32} name="Revenue" />
-                        <Bar dataKey="profit" fill="#10B981" radius={[4, 4, 0, 0]} barSize={32} name="Profit" />
+                        <Bar dataKey="revenue" fill="#4F46E5" radius={[4, 4, 0, 0]} barSize={32} name="Sales" />
                       </BarChart>
                     </ResponsiveContainer>
                   </div>
